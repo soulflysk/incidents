@@ -1,0 +1,29 @@
+@model IncidentResolution
+
+<h2>บันทึกการแก้ไขปัญหา</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="IncidentId" />
+
+    <label>Component ที่เกิดปัญหา:</label>
+    <select asp-for="Component">
+        <option value="Server">Server</option>
+        <option value="Hardware">Hardware</option>
+        <option value="Software สำเร็จรูป">Software สำเร็จรูป</option>
+        <option value="ระบบ Application">ระบบ Application</option>
+    </select><br>
+
+    <label>รายละเอียดการแก้ไข:</label>
+    <textarea asp-for="ResolutionDetails"></textarea><br>
+
+    <label>วันที่คาดว่าจะเริ่มแก้ไข:</label>
+    <input type="date" asp-for="EstimatedStartDate" /><br>
+
+    <label>วันที่คาดว่าจะเสร็จ:</label>
+    <input type="date" asp-for="EstimatedEndDate" /><br>
+
+    <label>วันที่แก้ไขแล้วเสร็จ:</label>
+    <input type="date" asp-for="ActualCompletionDate" /><br>
+
+    <button type="submit">บันทึก</button>
+</form>

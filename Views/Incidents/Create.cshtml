@@ -1,0 +1,79 @@
+@model Incident
+<form method="post" asp-action="Create">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Create Incident</h2>
+            <hr />
+        </div>
+        @*<div asp-validation-summary="All"></div>*@
+        <div class="mb-3">
+            <label asp-for="Problem"></label>
+            <input asp-for="Problem" class="form-control" />
+            <span asp-validation-for="Problem" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Date"></label>
+            <input asp-for="Date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Result"></label>
+            <input asp-for="Result" class="form-control" />
+            <span asp-validation-for="Result" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <select asp-for="serviceTypeId" class="form-select" asp-items="ViewBag.serviceTypeId"></select>
+        </div>
+        <div class="mb-3">
+            <label>ที่มา:</label>
+            <select class="form-control" id="sourceSelect" asp-for="InsideOrOutside">
+                <option value="ภายใน">ภายใน</option>
+                <option value="ภายนอก">ภายนอก</option>
+            </select><br>
+        </div>
+        <div class="mb-3" id="internalFields">
+            <label>รหัสพนักงาน:</label>
+            <input type="text" asp-for="EmployeeId"  class="form-control"/><br>
+        </div>
+
+        <div class="mb-3" id="externalFields">
+            <label>ชื่อผู้แจ้ง:</label>
+            <input type="text" asp-for="Name"  class="form-control"/><br>
+            <label>บริษัท:</label>
+            <input type="text" asp-for="CompanyName"  class="form-control"/><br>
+            <label>เบอร์โทรศัพท์:</label>
+            <input type="text" asp-for="PhoneNumber"  class="form-control"/><br>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:150px">Create</button>
+        <a asp_controller="Incident" asp-action="Index" class="btn btn-secondary" style="width:150px">
+            Back to List
+        </a>
+    </div>
+</form>
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function toggleFields() {
+            if ($("#sourceSelect").val() === "ภายใน") {
+                $("#internalFields").show();
+                $("#externalFields").hide();
+            } else {
+                $("#internalFields").hide();
+                $("#externalFields").show();
+            }
+        }
+
+        $("#sourceSelect").change(toggleFields);
+        toggleFields(); // เรียกตอนโหลดหน้าแรก
+    });
+</script>

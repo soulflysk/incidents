@@ -1,0 +1,28 @@
+@{
+    ViewBag.Title = "Incident History";
+}
+<h2>Incident History</h2>
+
+@if (ViewBag.History != null && ViewBag.History.Count > 0)
+{
+    <table border="1">
+        <tr>
+            <th>Assigned By</th>
+            <th>Assigned To</th>
+            <th>DateTime</th>
+        </tr>
+        @foreach (var record in ViewBag.History)
+        {
+            <tr>
+                <td>@record.AssignedByEmployeeID</td>
+                <td>@record.AssignedToEmployeeID</td>
+                <td>@record.AssignDateTime</td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No assignment history found.</p>
+}
+<a href="/AssignIncident/Index">Back to Assign</a>
