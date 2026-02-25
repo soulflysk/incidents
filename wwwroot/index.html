@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการเหตุการณ์ (Incident Management System)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showIncidentList()">
+                            <i class="bi bi-list-ul"></i> รายการเหตุการณ์
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showNewIncident()">
+                            <i class="bi bi-plus-circle"></i> บันทึกเหตุการณ์ใหม่
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showAssignments()">
+                            <i class="bi bi-person-check"></i> การมอบหมาย
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> สวัสดี, ผู้ใช้งาน
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> โปรไฟล์</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> ตั้งค่า</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> ออกจากระบบ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <!-- Incident List View -->
+        <div id="incidentListView" class="content-section">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-list-ul"></i> รายการเหตุการณ์ทั้งหมด
+                            </h5>
+                            <div>
+                                <button class="btn btn-success btn-sm" onclick="showNewIncident()">
+                                    <i class="bi bi-plus-circle"></i> เหตุการณ์ใหม่
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="refreshIncidentList()">
+                                    <i class="bi bi-arrow-clockwise"></i> รีเฟรช
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Filters -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">ค้นหา</label>
+                                    <input type="text" class="form-control" id="searchIncident" placeholder="ค้นหาเลขที่เหตุการณ์, ผู้แจ้ง...">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">สถานะ</label>
+                                    <select class="form-select" id="filterStatus">
+                                        <option value="">ทั้งหมด</option>
+                                        <option value="รับแจ้ง">รับแจ้ง</option>
+                                        <option value="ดำเนินการ">ดำเนินการ</option>
+                                        <option value="รอดำเนินการ">รอดำเนินการ</option>
+                                        <option value="แก้ไขแล้ว">แก้ไขแล้ว</option>
+                                        <option value="ปิดเรื่อง">ปิดเรื่อง</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">ความสำคัญ</label>
+                                    <select class="form-select" id="filterPriority">
+                                        <option value="">ทั้งหมด</option>
+                                        <option value="ต่ำ">ต่ำ</option>
+                                        <option value="ปานกลาง">ปานกลาง</option>
+                                        <option value="สูง">สูง</option>
+                                        <option value="วิกฤต">วิกฤต</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">วันที่รับแจ้ง</label>
+                                    <input type="date" class="form-control" id="filterDate">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button class="btn btn-outline-primary w-100" onclick="applyFilters()">
+                                        <i class="bi bi-funnel"></i> กรอง
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Incident Table -->
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>เลขที่เหตุการณ์</th>
+                                            <th>วันที่รับแจ้ง</th>
+                                            <th>ผู้แจ้ง</th>
+                                            <th>ประเภทบริการ</th>
+                                            <th>ปัญหา</th>
+                                            <th>สถานะ</th>
+                                            <th>ความสำคัญ</th>
+                                            <th>การดำเนินการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incidentTableBody">
+                                        <!-- Sample data -->
+                                        <tr>
+                                            <td><span class="badge bg-info">INC-2024-001</span></td>
+                                            <td>25/02/2024 09:30</td>
+                                            <td>สมชาย ใจดี (ภายใน)</td>
+                                            <td>MS Office</td>
+                                            <td>ไม่สามารถเปิดไฟล์ Excel ได้</td>
+                                            <td><span class="badge bg-warning">ดำเนินการ</span></td>
+                                            <td><span class="badge bg-secondary">ปานกลาง</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="viewIncident('INC-2024-001')">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="editIncident('INC-2024-001')">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-success" onclick="assignIncident('INC-2024-001')">
+                                                    <i class="bi bi-person-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="badge bg-info">INC-2024-002</span></td>
+                                            <td>25/02/2024 10:15</td>
+                                            <td>บริษัท ABC (ภายนอก)</td>
+                                            <td>PC/Mobile Device</td>
+                                            <td>คอมพิวเตอร์เปิดไม่ติด</td>
+                                            <td><span class="badge bg-danger">วิกฤต</span></td>
+                                            <td><span class="badge bg-danger">วิกฤต</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="viewIncident('INC-2024-002')">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-warning" onclick="editIncident('INC-2024-002')">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-success" onclick="assignIncident('INC-2024-002')">
+                                                    <i class="bi bi-person-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#">ก่อนหน้า</a>
+                                    </li>
+                                    <li class="page-item active">
+                                        <a class="page-link" href="#">1</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">2</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">3</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">ถัดไป</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Incident Form -->
+        <div id="newIncidentView" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-plus-circle"></i> บันทึกเหตุการณ์ใหม่
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="incidentForm">
+                                <!-- Reporter Information -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h6 class="text-primary"><i class="bi bi-person-fill"></i> ข้อมูลผู้แจ้ง</h6>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประเภทผู้แจ้ง <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="reporterType" onchange="toggleReporterFields()" required>
+                                            <option value="">-- เลือกประเภทผู้แจ้ง --</option>
+                                            <option value="ภายใน ก.ล.ต.">ภายใน ก.ล.ต.</option>
+                                            <option value="ภายนอก ก.ล.ต.">ภายนอก ก.ล.ต.</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">วันที่รับแจ้ง <span class="text-danger">*</span></label>
+                                        <input type="datetime-local" class="form-control" id="notificationDate" required>
+                                    </div>
+                                </div>
+
+                                <!-- Internal Reporter Fields -->
+                                <div id="internalReporterFields" class="row mb-4" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label class="form-label">รหัสพนักงาน <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="employeeId" placeholder="กรอกรหัสพนักงาน">
+                                        <div class="form-text">กรอกรหัสพนักงานเพื่อดึงข้อมูลอัตโนมัติ</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ชื่อพนักงาน</label>
+                                        <input type="text" class="form-control" id="employeeName" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- External Reporter Fields -->
+                                <div id="externalReporterFields" class="row mb-4" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label class="form-label">อีเมล์ผู้แจ้ง <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="externalEmail" placeholder="example@email.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ชื่อผู้แจ้ง <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="externalName" placeholder="ชื่อ-นามสกุล">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ชื่อบริษัท</label>
+                                        <input type="text" class="form-control" id="externalCompany" placeholder="ชื่อบริษัท">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">เบอร์โทรศัพท์</label>
+                                        <input type="tel" class="form-control" id="externalPhone" placeholder="02-123-4567">
+                                    </div>
+                                </div>
+
+                                <!-- Incident Details -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h6 class="text-primary"><i class="bi bi-exclamation-triangle-fill"></i> รายละเอียดเหตุการณ์</h6>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประเภทบริการ <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="serviceType" required>
+                                            <option value="">-- เลือกประเภทบริการ --</option>
+                                            <option value="MS Office">MS Office</option>
+                                            <option value="PC/Mobile Device/Notebook/Printer">PC/Mobile Device/Notebook/Printer</option>
+                                            <option value="ขอติดตั้ง Software">ขอติดตั้ง Software</option>
+                                            <option value="ขอบริการเกี่ยวกับบัญชีผู้ใช้งาน">ขอบริการเกี่ยวกับบัญชีผู้ใช้งาน</option>
+                                            <option value="ระบบงานภายนอก">ระบบงานภายนอก</option>
+                                            <option value="ระบบงานภายใน">ระบบงานภายใน</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ความสำคัญ <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="priority" required>
+                                            <option value="">-- เลือกความสำคัญ --</option>
+                                            <option value="ต่ำ">ต่ำ</option>
+                                            <option value="ปานกลาง">ปานกลาง</option>
+                                            <option value="สูง">สูง</option>
+                                            <option value="วิกฤต">วิกฤต</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">ปัญหา/ความต้องการ <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="problemDescription" rows="4" 
+                                                placeholder="กรุณากรอกรายละเอียดปัญหาหรือความต้องการอย่างชัดเจน..." required></textarea>
+                                        <div class="form-text">กรุณากรอกรายละเอียดให้ชัดเจนเพื่อการดำเนินการที่รวดเร็ว</div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Actions -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <button type="button" class="btn btn-secondary" onclick="showIncidentList()">
+                                                <i class="bi bi-arrow-left"></i> ยกเลิก
+                                            </button>
+                                            <div>
+                                                <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
+                                                    <i class="bi bi-save"></i> บันทึกฉบับร่าง
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-check-circle"></i> บันทึกเหตุการณ์
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment View -->
+        <div id="assignmentView" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-person-check"></i> การมอบหมายเหตุการณ์
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">1st Level Support</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">เลือกเจ้าหน้าที่</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="staff1" value="EMP001">
+                                                    <label class="form-check-label" for="staff1">
+                                                        นายสมชาย ใจดี (EMP001)
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="staff2" value="EMP002">
+                                                    <label class="form-check-label" for="staff2">
+                                                        นางสาวมานี รักดี (EMP002)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-primary btn-sm" onclick="assignTo1stLevel()">
+                                                <i class="bi bi-person-plus"></i> มอบหมาย
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0">2nd Level Support</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">เลือกเจ้าหน้าที่</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="staff3" value="EMP003">
+                                                    <label class="form-check-label" for="staff3">
+                                                        นายวิทยา เชี่ยวชาญ (EMP003)
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="staff4" value="EMP004">
+                                                    <label class="form-check-label" for="staff4">
+                                                        นางสาวปรียา เก่ง (EMP004)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-warning btn-sm" onclick="assignTo2ndLevel()">
+                                                <i class="bi bi-person-plus"></i> มอบหมาย
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resolution Modal -->
+    <div class="modal fade" id="resolutionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-tools"></i> บันทึกการแก้ไขปัญหา
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resolutionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Component ที่เกิดปัญหา <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="componentName" 
+                                       placeholder="ชื่อ Server/Hardware/Software/Application" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">เวลาที่ใช้แก้ปัญหา (ชั่วโมง) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="hoursSpent" 
+                                       step="0.5" min="0" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">วันที่คาดว่าจะแก้ปัญหา</label>
+                                <input type="date" class="form-control" id="estimatedStartDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">วันที่คาดว่าจะแก้เสร็จ</label>
+                                <input type="date" class="form-control" id="estimatedEndDate">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">รายละเอียดการแก้ไขปัญหา <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="resolutionDetails" rows="4" 
+                                         placeholder="กรอกรายละเอียดการแก้ไขปัญหา..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">วันที่แก้ไขแล้วเสร็จ</label>
+                                <input type="datetime-local" class="form-control" id="actualResolutionDate">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" onclick="saveResolution()">
+                        <i class="bi bi-save"></i> บันทึกการแก้ไข
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+</body>
+</html>
