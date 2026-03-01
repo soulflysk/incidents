@@ -18,7 +18,7 @@ namespace DOTNETCORE_DEV.Models
         public string Problem { get; set; }
         
         [Required(ErrorMessage = "กรุณาเลือกวันที่รับแจ้ง")]
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         
         [Required(ErrorMessage = "กรุณาเลือกสถานะ")]
         public string Result { get; set; }

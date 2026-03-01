@@ -1,0 +1,138 @@
+@model DOTNETCORE_DEV.Models.Incident
+@{
+    ViewData["Title"] = "รายละเอียดเหตุการณ์";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-eye"></i> รายละเอียดเหตุการณ์
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6>รหัสเหตุการณ์:</h6>
+                                <p class="fw-bold">@Model.IncidentId</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>วันที่:</h6>
+                                <p>@Model.Date.ToShortDateString()</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6>ประเภทบริการ:</h6>
+                                <p>@Model.ServiceType?.serviceTypesName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>สถานะ:</h6>
+                                <span class="badge @(Model.Result switch
+                                {
+                                    "รับเรื่อง" => "bg-primary",
+                                    "กำลังดำเนินการ" => "bg-warning",
+                                    "แก้ไขแล้ว" => "bg-success",
+                                    "ปิดเรื่อง" => "bg-dark",
+                                    _ => "bg-secondary"
+                                })">
+                                    @Model.Result
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6>ปัญหา:</h6>
+                                <p>@Model.Problem</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6>ประเภทผู้แจ้ง:</h6>
+                                <p>@Model.InsideOrOutside</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>รหัสพนักงาน:</h6>
+                                <p>@Model.EmployeeId</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6>ผู้แจ้ง:</h6>
+                                <p>@Model.Name</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>อีเมล:</h6>
+                                <p>@Model.Email</p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.CompanyName))
+                        {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>บริษัท:</h6>
+                                    <p>@Model.CompanyName</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>เบอร์โทรศัพท์:</h6>
+                                    <p>@Model.PhoneNumber</p>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Edit", "Home", new { id = Model.IncidentId })" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> แก้ไข
+                            </a>
+                            <a href="@Url.Action("Create", "IncidentResolution", new { incidentId = Model.IncidentId })" class="btn btn-info">
+                                <i class="bi bi-tools"></i> แก้ไขปัญหา
+                            </a>
+                            <a href="@Url.Action("Delete", "Home", new { id = Model.IncidentId })" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> ลบ
+                            </a>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> กลับรายการ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

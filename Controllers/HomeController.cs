@@ -38,7 +38,7 @@ namespace DOTNETCORE_DEV.Controllers
 
             if (!string.IsNullOrEmpty(serviceTypeFilter))
             {
-                incidents = incidents.Where(i => i.ServiceType.serviceTypesName.Contains(serviceTypeFilter));
+                incidents = incidents.Where(i => i.ServiceType != null && i.ServiceType.serviceTypesName.Contains(serviceTypeFilter));
             }
 
             // Pagination
@@ -121,6 +121,26 @@ namespace DOTNETCORE_DEV.Controllers
             {
                 try
                 {
+                    // Debug: แสดงข้อมูลที่จะบันทึก
+                    Console.WriteLine("=== SAVE INCIDENT DEBUG ===");
+                    Console.WriteLine($"IncidentId: {incident.IncidentId}");
+                    Console.WriteLine($"Problem: {incident.Problem}");
+                    Console.WriteLine($"Date: {incident.Date} (Type: {incident.Date.GetType().Name})");
+                    Console.WriteLine($"Result: {incident.Result}");
+                    Console.WriteLine($"InsideOrOutside: {incident.InsideOrOutside}");
+                    Console.WriteLine($"EmployeeId: {incident.EmployeeId}");
+                    Console.WriteLine($"Email: {incident.Email}");
+                    Console.WriteLine($"Name: {incident.Name}");
+                    Console.WriteLine($"CompanyName: {incident.CompanyName}");
+                    Console.WriteLine($"PhoneNumber: {incident.PhoneNumber}");
+                    Console.WriteLine($"serviceTypeId: {incident.serviceTypeId}");
+                    
+                    // ตรวจสอบว่ามีข้อมูลที่จำเป็น
+                    if (incident.IncidentId == 0)
+                    {
+                        Console.WriteLine("WARNING: IncidentId is 0, this might indicate a problem with entity creation");
+                    }
+                    
                     _context.Add(incident);
                     await _context.SaveChangesAsync();
                     Console.WriteLine($"Successfully saved incident with ID: {incident.IncidentId}");

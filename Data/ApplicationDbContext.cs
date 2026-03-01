@@ -20,6 +20,14 @@ namespace DOTNETCORE_DEV.Data
         {
             base.OnModelCreating(modelBuilder);
             
+            // Configure Incident entity
+            modelBuilder.Entity<Incident>(entity =>
+            {
+                entity.HasKey(e => e.IncidentId);
+                entity.Property(e => e.IncidentId)
+                    .ValueGeneratedOnAdd();
+            });
+            
             // Seed ServiceTypes
             modelBuilder.Entity<serviceTypes>().HasData(
                 new serviceTypes { serviceTypeId = 1, serviceTypesName = "MS Office" },

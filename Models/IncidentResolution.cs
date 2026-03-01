@@ -1,21 +1,23 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DOTNETCORE_DEV.Models;
 
-public class IncidentResolution
+namespace DOTNETCORE_DEV.Models
 {
-    [Key]
-    public int Id { get; set; }
+    public class IncidentResolution
+    {
+        [Key]
+        public int Id { get; set; }
 
-    [ForeignKey("Incident")]
-    public int IncidentId { get; set; } // เชื่อมโยงกับ Incident หลัก
-    public string Component { get; set; } // เช่น Server/Hardware/Software/Application
-    public string ResolutionDetails { get; set; } // รายละเอียดการแก้ไข
-    public DateTime EstimatedStartDate { get; set; } // วันที่คาดว่าจะเริ่มแก้ไข
-    public DateTime EstimatedEndDate { get; set; } // วันที่คาดว่าเสร็จ
-    public DateTime? ActualCompletionDate { get; set; } // วันที่แก้เสร็จจริง (nullable)
-    public double HoursSpent { get; set; } // จำนวนชั่วโมงที่ใช้
+        [ForeignKey("Incident")]
+        public int IncidentId { get; set; } // เชื่อมโยงกับ Incident หลัก
+        public string Component { get; set; } // เช่น Server/Hardware/Software/Application
+        public string ResolutionDetails { get; set; } // รายละเอียดการแก้ไข
+        public DateTime EstimatedStartDate { get; set; } // วันที่คาดว่าจะเริ่มแก้ไข
+        public DateTime EstimatedEndDate { get; set; } // วันที่คาดว่าจะเสร็จ
+        public DateTime? ActualCompletionDate { get; set; } // วันที่แก้เสร็จจริง (nullable)
+        public double HoursSpent { get; set; } // จำนวนชั่วโมงที่ใช้
 
-    public virtual Incident Incident { get; set; } // ความสัมพันธ์กับ Incident
+        public virtual Incident? Incident { get; set; } // ความสัมพันธ์กับ Incident
+    }
 }

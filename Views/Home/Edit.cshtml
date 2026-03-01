@@ -1,0 +1,149 @@
+@model DOTNETCORE_DEV.Models.Incident
+@{
+    ViewData["Title"] = "แก้ไขเหตุการณ์";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pencil"></i> แก้ไขเหตุการณ์
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Edit" method="post">
+                            <input type="hidden" asp-for="IncidentId" />
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">ปัญหา/ความต้องการ <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" asp-for="Problem" rows="4" required placeholder="กรุณากรอกปัญหา/ความต้องการ..."></textarea>
+                                    <span asp-validation-for="Problem" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่รับแจ้ง <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" asp-for="Date" required />
+                                    <span asp-validation-for="Date" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">สถานะ <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="Result" required>
+                                        <option value="">เลือกสถานะ</option>
+                                        <option value="รับแจ้ง">รับแจ้ง</option>
+                                        <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                                        <option value="แก้ไขแล้ว">แก้ไขแล้ว</option>
+                                        <option value="ปิดเรื่อง">ปิดเรื่อง</option>
+                                    </select>
+                                    <span asp-validation-for="Result" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ประเภทผู้แจ้ง <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="InsideOrOutside" required>
+                                        <option value="">เลือกประเภทผู้แจ้ง</option>
+                                        <option value="ภายใน">ภายใน</option>
+                                        <option value="ภายนอก">ภายนอก</option>
+                                    </select>
+                                    <span asp-validation-for="InsideOrOutside" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">รหัสพนักงาน</label>
+                                    <input type="number" class="form-control" asp-for="EmployeeId" placeholder="กรุณากรอกรหัสพนักงาน..." />
+                                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">อีเมล</label>
+                                    <input type="email" class="form-control" asp-for="Email" placeholder="กรุณากรอกอีเมล..." />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">ชื่อผู้แจ้ง <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Name" required placeholder="กรุณากรอกชื่อผู้แจ้ง..." />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">บริษัท</label>
+                                    <input type="text" class="form-control" asp-for="CompanyName" placeholder="กรุณากรอกชื่อบริษัท..." />
+                                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">เบอร์โทรศัพท์</label>
+                                    <input type="number" class="form-control" asp-for="PhoneNumber" placeholder="กรุณากรอกเบอร์โทรศัพท์..." />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ประเภทบริการ <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="serviceTypeId" required>
+                                        <option value="">เลือกประเภทบริการ</option>
+                                        @if (ViewBag.ServiceTypes != null)
+                                        {
+                                            @foreach (var serviceType in ViewBag.ServiceTypes)
+                                            {
+                                                <option value="@serviceType.serviceTypeId">@serviceType.serviceTypesName</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="serviceTypeId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check"></i> บันทึกการแก้ไข
+                                </button>
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> กลับรายการ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

@@ -151,6 +151,9 @@
                                                     <a href="@Url.Action("Edit", "Home", new { id = incident.IncidentId })" class="btn btn-sm btn-warning" title="แก้ไข">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
+                                                    <a href="@Url.Action("Create", "IncidentResolution", new { incidentId = incident.IncidentId })" class="btn btn-sm btn-info" title="แก้ไขปัญหา">
+                                                        <i class="bi bi-tools"></i>
+                                                    </a>
                                                     <a href="@Url.Action("Delete", "Home", new { id = incident.IncidentId })" class="btn btn-sm btn-danger" title="ลบ">
                                                         <i class="bi bi-trash"></i>
                                                     </a>

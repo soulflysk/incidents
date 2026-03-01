@@ -1,24 +1,91 @@
 @model List<IncidentResolution>
+@{
+    ViewData["Title"] = "ประวัติการแก้ไขปัญหา";
+}
 
-<h2>ประวัติการแก้ไขปัญหา</h2>
-<table border="1">
-    <tr>
-        <th>Component</th>
-        <th>รายละเอียดการแก้ไข</th>
-        <th>วันที่คาดว่าจะเริ่ม</th>
-        <th>วันที่คาดว่าเสร็จ</th>
-        <th>วันที่เสร็จจริง</th>
-        <th>ชั่วโมงที่ใช้</th>
-    </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.Component</td>
-            <td>@item.ResolutionDetails</td>
-            <td>@item.EstimatedStartDate.ToShortDateString()</td>
-            <td>@item.EstimatedEndDate.ToShortDateString()</td>
-            <td>@item.ActualCompletionDate?.ToShortDateString()</td>
-            <td>@item.HoursSpent</td>
-        </tr>
-    }
-</table>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-tools"></i> ประวัติการแก้ไขปัญหา
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Component</th>
+                                            <th>รายละเอียดการแก้ไข</th>
+                                            <th>วันที่คาดว่าจะเริ่ม</th>
+                                            <th>วันที่คาดว่าจะเสร็จ</th>
+                                            <th>วันที่แก้ไขแล้วเสร็จ</th>
+                                            <th>ชั่วโมงที่ใช้</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.Component</td>
+                                                <td>@item.ResolutionDetails</td>
+                                                <td>@item.EstimatedStartDate.ToShortDateString()</td>
+                                                <td>@item.EstimatedEndDate.ToShortDateString()</td>
+                                                <td>@item.ActualCompletionDate?.ToShortDateString()</td>
+                                                <td>@item.HoursSpent</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox fs-1 text-muted"></i>
+                                <p class="text-muted mt-2">ไม่พบข้อมูลการแก้ไขปัญหา</p>
+                                <p class="text-muted">กรุณาสร้างเหตุการณ์ใหม่ก่อน</p>
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-2">
+                                    <i class="bi bi-house"></i> กลับหน้าแรก
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
