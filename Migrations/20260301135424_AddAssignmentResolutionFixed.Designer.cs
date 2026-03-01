@@ -4,6 +4,7 @@ using DOTNETCORE_DEV.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DOTNETCORE_DEV.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260301135424_AddAssignmentResolutionFixed")]
+    partial class AddAssignmentResolutionFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,44 +303,37 @@ namespace DOTNETCORE_DEV.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentId"));
 
                     b.Property<string>("CompanyName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("InsideOrOutside")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int?>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Problem")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Result")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("serviceTypeId")
+                    b.Property<int>("serviceTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("IncidentId");
@@ -427,11 +423,11 @@ namespace DOTNETCORE_DEV.Migrations
 
             modelBuilder.Entity("DOTNETCORE_DEV.Models.IncidentResolution", b =>
                 {
-                    b.Property<int>("ResolutionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResolutionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("ActualCompletionDate")
                         .HasColumnType("datetime2");
@@ -456,7 +452,7 @@ namespace DOTNETCORE_DEV.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ResolutionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("IncidentId");
 
@@ -687,11 +683,15 @@ namespace DOTNETCORE_DEV.Migrations
                 {
                     b.HasOne("DOTNETCORE_DEV.Models.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DOTNETCORE_DEV.Models.serviceTypes", "ServiceType")
                         .WithMany()
-                        .HasForeignKey("serviceTypeId");
+                        .HasForeignKey("serviceTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
 
@@ -713,7 +713,7 @@ namespace DOTNETCORE_DEV.Migrations
                         .IsRequired();
 
                     b.HasOne("DOTNETCORE_DEV.Models.Incident", "Incident")
-                        .WithMany("IncidentAssignments")
+                        .WithMany()
                         .HasForeignKey("IncidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -735,7 +735,7 @@ namespace DOTNETCORE_DEV.Migrations
             modelBuilder.Entity("DOTNETCORE_DEV.Models.IncidentResolution", b =>
                 {
                     b.HasOne("DOTNETCORE_DEV.Models.Incident", "Incident")
-                        .WithMany("IncidentResolutions")
+                        .WithMany()
                         .HasForeignKey("IncidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -797,13 +797,6 @@ namespace DOTNETCORE_DEV.Migrations
             modelBuilder.Entity("DOTNETCORE_DEV.Models.AssignmentResolution", b =>
                 {
                     b.Navigation("Attachments");
-                });
-
-            modelBuilder.Entity("DOTNETCORE_DEV.Models.Incident", b =>
-                {
-                    b.Navigation("IncidentAssignments");
-
-                    b.Navigation("IncidentResolutions");
                 });
 #pragma warning restore 612, 618
         }

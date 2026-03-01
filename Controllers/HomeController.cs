@@ -20,6 +20,7 @@ namespace DOTNETCORE_DEV.Controllers
             var incidents = _context.Incidents
                 .Include(i => i.Employee)
                 .Include(i => i.ServiceType)
+                .Include(i => i.IncidentResolutions) // เพิ่มการ include IncidentResolutions
                 .AsQueryable();
 
             // Apply filters
@@ -52,14 +53,14 @@ namespace DOTNETCORE_DEV.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Load dropdown data
-            ViewBag.ServiceTypes = await _context.ServiceTypes.ToListAsync();
-            ViewBag.Employees = await _context.Employees.ToListAsync();
-
-            // Pagination data
+            // Pass data to view
+            ViewData["StatusFilter"] = statusFilter;
+            ViewData["ServiceTypeFilter"] = serviceTypeFilter;
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
-            ViewData["TotalItems"] = totalItems;
+
+            ViewBag.ServiceTypes = await _context.ServiceTypes.ToListAsync();
+            ViewBag.StatusOptions = new[] { "รับแจ้ง", "ดำเนินการ", "รอดำเนินการ", "แก้ไขแล้ว", "ปิดเรื่อง" };
 
             return View(pagedIncidents);
         }

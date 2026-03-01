@@ -1,0 +1,188 @@
+@model DOTNETCORE_DEV.Models.AssignmentResolution
+@{
+    ViewData["Title"] = "แก้ไขการแก้ไขปัญหา";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+                <a class="nav-link text-white" href="@Url.Action("Index", "IncidentAssignment")">
+                    <i class="bi bi-person-plus"></i> Assign Incident
+                </a>
+                @if (ViewBag.Assignment != null)
+                {
+                    <a class="nav-link text-white" href="@Url.Action("MyAssignments", "IncidentAssignment", new { employeeId = ViewBag.Assignment.AssignedToEmployeeId })">
+                        <i class="bi bi-person-workspace"></i> งานของฉัน
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pencil"></i> แก้ไขการแก้ไขปัญหา
+                            @if (ViewBag.Assignment != null)
+                            {
+                                <span class="badge bg-primary ms-2">Assignment #@ViewBag.Assignment.AssignmentId</span>
+                            }
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.Assignment != null)
+                        {
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6>รายละเอียดเหตุการณ์</h6>
+                                    <p><strong>ปัญหา:</strong> @ViewBag.Assignment.Incident?.Problem</p>
+                                    <p><strong>วันที่รับแจ้ง:</strong> @ViewBag.Assignment.Incident?.Date.ToShortDateString()</p>
+                                    <p><strong>ผู้แจ้ง:</strong> @ViewBag.Assignment.Incident?.Name</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>ข้อมูลการมอบหมาย</h6>
+                                    <p><strong>ส่งโดย:</strong> @ViewBag.Assignment.AssignedByEmployee?.Name</p>
+                                    <p><strong>รับผิดชอบ:</strong> @ViewBag.Assignment.AssignedToEmployee?.Name</p>
+                                    <p><strong>วันที่ส่ง:</strong> @ViewBag.Assignment.AssignedDateTime.ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        }
+
+                        <form asp-action="Edit" method="post">
+                            <input type="hidden" asp-for="ResolutionId" />
+                            <input type="hidden" asp-for="AssignmentId" />
+                            <input type="hidden" asp-for="IncidentId" />
+                            <input type="hidden" asp-for="EmployeeId" />
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Component ที่เกิดปัญหา <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="Component" required>
+                                        <option value="">-- เลือก Component --</option>
+                                        @if (ViewBag.Components != null)
+                                        {
+                                            @foreach (var component in ViewBag.Components)
+                                            {
+                                                <option value="@component">@component</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Component" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ระดับความสำคัญ</label>
+                                    <select class="form-select" asp-for="Priority">
+                                        <option value="1">1 - สูงสุด</option>
+                                        <option value="2">2 - สูง</option>
+                                        <option value="3">3 - ปานกลาง</option>
+                                        <option value="4">4 - ต่ำ</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">รายละเอียดการแก้ไขปัญหา <span class="text-danger">*</span></label>
+                                <textarea class="form-control" asp-for="ResolutionDetails" rows="4" required placeholder="กรุณากรอกรายละเอียดการแก้ไขปัญหา..."></textarea>
+                                <span asp-validation-for="ResolutionDetails" class="text-danger"></span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่คาดว่าจะเริ่มแก้ไข <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" asp-for="EstimatedStartDate" required />
+                                    <span asp-validation-for="EstimatedStartDate" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่คาดว่าจะเสร็จ <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" asp-for="EstimatedEndDate" required />
+                                    <span asp-validation-for="EstimatedEndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่แก้ไขแล้วเสร็จ</label>
+                                    <input type="date" class="form-control" asp-for="ActualCompletionDate" />
+                                    <span asp-validation-for="ActualCompletionDate" class="text-danger"></span>
+                                    <small class="text-muted">* หากระบุวันที่เสร็จสิ้น จะคำนวณจำนวนชั่วโมงอัตโนมัติ</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">สถานะการแก้ไข</label>
+                                    <select class="form-select" asp-for="ResolutionStatus">
+                                        <option value="In Progress">กำลังดำเนินการ</option>
+                                        <option value="Completed">เสร็จสิ้น</option>
+                                        <option value="On Hold">ระงับชั่วคราว</option>
+                                        <option value="Cancelled">ยกเลิก</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">หมายเหตุ</label>
+                                <textarea class="form-control" asp-for="Notes" rows="3" placeholder="กรุณากรอกหมายเหตุเพิ่มเติม..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">บันทึกการเสร็จสิ้น</label>
+                                <textarea class="form-control" asp-for="CompletionNotes" rows="3" placeholder="กรุณากรอกบันทึกการเสร็จสิ้น..."></textarea>
+                                <span asp-validation-for="CompletionNotes" class="text-danger"></span>
+                            </div>
+
+                            @if (Model.HoursSpent > 0)
+                            {
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>เวลาที่ใช้:</strong> @Model.HoursSpent.ToString("F2") ชั่วโมง
+                                </div>
+                            }
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> บันทึกการแก้ไข
+                                </button>
+                                @if (ViewBag.Assignment != null)
+                                {
+                                    <a href="@Url.Action("Index", new { assignmentId = ViewBag.Assignment.AssignmentId })" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> กลับ
+                                    </a>
+                                    <a href="@Url.Action("MyAssignments", "IncidentAssignment", new { employeeId = ViewBag.Assignment.AssignedToEmployeeId })" class="btn btn-info">
+                                        <i class="bi bi-person-workspace"></i> งานของฉัน
+                                    </a>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

@@ -49,10 +49,9 @@ public class IncidentAssignmentController : Controller
             return NotFound();
         }
 
-        ViewBag.Incident = incident;
         ViewBag.Employees = await _db.Employees.ToListAsync();
         
-        return View();
+        return View(incident);
     }
 
     // บันทึกการ Assign Incident

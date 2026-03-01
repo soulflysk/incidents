@@ -1,0 +1,180 @@
+@model IEnumerable<DOTNETCORE_DEV.Models.AssignmentResolution>
+@{
+    ViewData["Title"] = "ประวัติการแก้ไขปัญหา";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+                <a class="nav-link text-white" href="@Url.Action("Index", "IncidentAssignment")">
+                    <i class="bi bi-person-plus"></i> Assign Incident
+                </a>
+                @if (ViewBag.Assignment != null)
+                {
+                    <a class="nav-link text-white" href="@Url.Action("MyAssignments", "IncidentAssignment", new { employeeId = ViewBag.Assignment.AssignedToEmployeeId })">
+                        <i class="bi bi-person-workspace"></i> งานของฉัน
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i> ประวัติการแก้ไขปัญหา
+                            @if (ViewBag.Assignment != null)
+                            {
+                                <span class="badge bg-primary ms-2">Assignment #@ViewBag.Assignment.AssignmentId</span>
+                                <span class="badge bg-info ms-1">Incident #@ViewBag.Assignment.IncidentId</span>
+                            }
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.Assignment != null)
+                        {
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6>รายละเอียดเหตุการณ์</h6>
+                                    <p><strong>ปัญหา:</strong> @ViewBag.Assignment.Incident?.Problem</p>
+                                    <p><strong>วันที่รับแจ้ง:</strong> @ViewBag.Assignment.Incident?.Date.ToShortDateString()</p>
+                                    <p><strong>สถานะ:</strong> @ViewBag.Assignment.Incident?.Result</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>ข้อมูลการมอบหมาย</h6>
+                                    <p><strong>ส่งโดย:</strong> @ViewBag.Assignment.AssignedByEmployee?.Name</p>
+                                    <p><strong>ส่งให้:</strong> @ViewBag.Assignment.AssignedToEmployee?.Name</p>
+                                    <p><strong>วันที่ส่ง:</strong> @ViewBag.Assignment.AssignedDateTime.ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ลำดับ</th>
+                                            <th>Component</th>
+                                            <th>รายละเอียดการแก้ไข</th>
+                                            <th>วันที่คาดว่าจะแก้</th>
+                                            <th>วันที่เสร็จสิ้น</th>
+                                            <th>เวลาที่ใช้ (ชม.)</th>
+                                            <th>สถานะ</th>
+                                            <th>จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.Count(); i++)
+                                        {
+                                            var resolution = Model.ElementAt(i);
+                                            <tr>
+                                                <td>@(i + 1)</td>
+                                                <td>
+                                                    <span class="badge bg-info">@resolution.Component</span>
+                                                </td>
+                                                <td>
+                                                    <small>@resolution.ResolutionDetails.Substring(0, Math.Min(100, resolution.ResolutionDetails.Length))...</small>
+                                                </td>
+                                                <td>
+                                                    <small>@resolution.EstimatedStartDate.ToString("dd/MM") - @resolution.EstimatedEndDate.ToString("dd/MM")</small>
+                                                </td>
+                                                <td>
+                                                    @if (resolution.ActualCompletionDate.HasValue)
+                                                    {
+                                                        <small>@resolution.ActualCompletionDate.Value.ToString("dd/MM HH:mm")</small>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (resolution.HoursSpent > 0)
+                                                    {
+                                                        <span class="badge bg-warning">@resolution.HoursSpent.ToString("F2")</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-@(resolution.ResolutionStatus == "In Progress" ? "primary" : resolution.ResolutionStatus == "Completed" ? "success" : "secondary")">
+                                                        @resolution.ResolutionStatus
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <a href="@Url.Action("Edit", new { id = resolution.ResolutionId })" class="btn btn-outline-primary" title="แก้ไข">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </a>
+                                                        <form asp-action="Delete" method="post" style="display: inline;">
+                                                            <input type="hidden" name="id" value="@resolution.ResolutionId" />
+                                                            <button type="submit" class="btn btn-outline-danger" title="ลบ" onclick="return confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                <p class="mt-2">ยังไม่มีประวัติการแก้ไขปัญหา</p>
+                                <p class="text-muted">เริ่มต้นบันทึกการแก้ไขปัญหาเพื่อติดตามความคืบหน้า</p>
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2 mt-4">
+                            @if (ViewBag.Assignment != null)
+                            {
+                                <a href="@Url.Action("Create", new { assignmentId = ViewBag.Assignment.AssignmentId })" class="btn btn-primary">
+                                    <i class="bi bi-plus"></i> บันทึกการแก้ไขใหม่
+                                </a>
+                                <a href="@Url.Action("MyAssignments", "IncidentAssignment", new { employeeId = ViewBag.Assignment.AssignedToEmployeeId })" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> กลับงานของฉัน
+                                </a>
+                                <a href="@Url.Action("History", "IncidentAssignment", new { incidentId = ViewBag.Assignment.IncidentId })" class="btn btn-info">
+                                    <i class="bi bi-clock-history"></i> ประวัติการส่งต่อ
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
