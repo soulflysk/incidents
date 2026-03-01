@@ -1,0 +1,127 @@
+@model DOTNETCORE_DEV.Models.Incident
+@{
+    ViewData["Title"] = "ส่งต่อ Incident";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+                <a class="nav-link text-white" href="@Url.Action("Index", "IncidentAssignment")">
+                    <i class="bi bi-person-plus"></i> Assign Incident
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-plus"></i> ส่งต่อ Incident #@Model.IncidentId
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Incident Details -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6>รายละเอียดเหตุการณ์</h6>
+                                <p><strong>ปัญหา:</strong> @Model.Problem</p>
+                                <p><strong>วันที่รับแจ้ง:</strong> @Model.Date.ToShortDateString()</p>
+                                <p><strong>สถานะ:</strong> @Model.Result</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>ข้อมูลผู้แจ้ง</h6>
+                                <p><strong>ชื่อ:</strong> @Model.Name</p>
+                                <p><strong>อีเมล:</strong> @Model.Email</p>
+                                <p><strong>ประเภทบริการ:</strong> @Model.ServiceType?.serviceTypesName</p>
+                            </div>
+                        </div>
+
+                        <!-- Assignment Form -->
+                        <form asp-action="Assign" method="post">
+                            <input type="hidden" name="incidentId" value="@Model.IncidentId" />
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">ส่งโดย <span class="text-danger">*</span></label>
+                                        <select name="assignedByEmployeeId" class="form-select" required>
+                                            <option value="">-- เลือกพนักงานที่ส่ง --</option>
+                                            @if (ViewBag.Employees != null)
+                                            {
+                                                @foreach (var employee in ViewBag.Employees)
+                                                {
+                                                    <option value="@employee.EmployeeID">
+                                                        @employee.Name (@(employee.SupportLevel == 1 ? "1st Level" : "2nd Level"))
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">ส่งให้ <span class="text-danger">*</span></label>
+                                        <select name="assignedToEmployeeId" class="form-select" required>
+                                            <option value="">-- เลือกพนักงานที่รับ --</option>
+                                            @if (ViewBag.Employees != null)
+                                            {
+                                                @foreach (var employee in ViewBag.Employees)
+                                                {
+                                                    <option value="@employee.EmployeeID">
+                                                        @employee.Name (@(employee.SupportLevel == 1 ? "1st Level" : "2nd Level"))
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">หมายเหตุ</label>
+                                <textarea name="assignmentNotes" class="form-control" rows="3" placeholder="กรุณากรอกหมายเหตุการส่งต่อ..."></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> ส่งต่อ Incident
+                                </button>
+                                <a href="@Url.Action("Index", "IncidentAssignment")" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> กลับ
+                                </a>
+                                <a href="@Url.Action("History", "IncidentAssignment", new { incidentId = Model.IncidentId })" class="btn btn-info">
+                                    <i class="bi bi-clock-history"></i> ดูประวัติ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

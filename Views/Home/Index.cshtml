@@ -31,6 +31,9 @@
                 <a class="nav-link text-white" href="@Url.Action("Create", "Home")">
                     <i class="bi bi-plus-circle"></i> บันทึกเหตุการณ์ใหม่
                 </a>
+                <a class="nav-link text-white" href="@Url.Action("Index", "IncidentAssignment")">
+                    <i class="bi bi-person-plus"></i> Assign Incident
+                </a>
             </div>
         </div>
     </nav>
@@ -150,6 +153,9 @@
                                                     </a>
                                                     <a href="@Url.Action("Edit", "Home", new { id = incident.IncidentId })" class="btn btn-sm btn-warning" title="แก้ไข">
                                                         <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Index", "IncidentResolution", new { incidentId = incident.IncidentId })" class="btn btn-sm btn-success" title="ประวัติการแก้ไข">
+                                                        <i class="bi bi-clock-history"></i>
                                                     </a>
                                                     <a href="@Url.Action("Create", "IncidentResolution", new { incidentId = incident.IncidentId })" class="btn btn-sm btn-info" title="แก้ไขปัญหา">
                                                         <i class="bi bi-tools"></i>

@@ -65,6 +65,24 @@ public class IncidentResolutionController : Controller
             ModelState.AddModelError("EstimatedEndDate", "กรุณาเลือกวันที่คาดว่าจะเสร็จ");
         }
 
+        // ตรวจสอบวันที่เริ่มต้องน้อยกว่าวันที่สิ้นสุด
+        if (model.EstimatedStartDate != DateTime.MinValue && model.EstimatedEndDate != DateTime.MinValue)
+        {
+            if (model.EstimatedStartDate > model.EstimatedEndDate)
+            {
+                ModelState.AddModelError("", "วันที่คาดว่าจะเริ่มแก้ไขต้องน้อยกว่าวันที่คาดว่าจะเสร็จ");
+            }
+        }
+
+        // ตรวจสอบวันที่แก้ไขแล้วต้องไม่น้อยกว่าวันที่เริ่ม
+        if (model.ActualCompletionDate.HasValue && model.ActualCompletionDate != DateTime.MinValue)
+        {
+            if (model.ActualCompletionDate < model.EstimatedStartDate)
+            {
+                ModelState.AddModelError("", "วันที่แก้ไขแล้วเสร็จต้องไม่น้อยกว่าวันที่คาดว่าจะเริ่มแก้ไข");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors);

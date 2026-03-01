@@ -1,0 +1,209 @@
+@{
+    ViewData["Title"] = "Assign Incident";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-house"></i> หน้าแรก
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Assign Form -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-plus"></i> ส่งต่อ Incident
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> @ViewBag.Error
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        
+                        @if (ViewBag.Success != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle"></i> @ViewBag.Success
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <form asp-action="Assign" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">เลือก Incident <span class="text-danger">*</span></label>
+                                <select name="incidentId" class="form-select" required>
+                                    <option value="">-- เลือก Incident --</option>
+                                    @if (ViewBag.Incidents != null)
+                                    {
+                                        @foreach (var incident in ViewBag.Incidents)
+                                        {
+                                            <option value="@incident.IncidentId">
+                                                #@incident.IncidentId - @incident.Problem.Substring(0, Math.Min(50, incident.Problem.Length))...
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">ส่งโดย <span class="text-danger">*</span></label>
+                                <select name="assignedByEmployeeId" class="form-select" required>
+                                    <option value="">-- เลือกพนักงานที่ส่ง --</option>
+                                    @if (ViewBag.Employees != null)
+                                    {
+                                        @foreach (var employee in ViewBag.Employees)
+                                        {
+                                            <option value="@employee.EmployeeID">
+                                                @employee.Name (@(employee.SupportLevel == 1 ? "1st Level" : "2nd Level"))
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">ส่งให้ <span class="text-danger">*</span></label>
+                                <select name="assignedToEmployeeId" class="form-select" required>
+                                    <option value="">-- เลือกพนักงานที่รับ --</option>
+                                    @if (ViewBag.Employees != null)
+                                    {
+                                        @foreach (var employee in ViewBag.Employees)
+                                        {
+                                            <option value="@employee.EmployeeID">
+                                                @employee.Name (@(employee.SupportLevel == 1 ? "1st Level" : "2nd Level"))
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">หมายเหตุ</label>
+                                <textarea name="assignmentNotes" class="form-control" rows="3" placeholder="กรุณากรอกหมายเหตุการส่งต่อ..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> ส่งต่อ Incident
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Assignments -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i> ประวัติการส่งต่อล่าสุด
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.RecentAssignments != null && ViewBag.RecentAssignments.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident</th>
+                                            <th>ส่งโดย</th>
+                                            <th>ส่งให้</th>
+                                            <th>วันที่</th>
+                                            <th>สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var assignment in ViewBag.RecentAssignments)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a href="@Url.Action("Details", "Home", new { id = assignment.IncidentId })">
+                                                        #@assignment.IncidentId
+                                                    </a>
+                                                </td>
+                                                <td>@assignment.AssignedByEmployee?.Name</td>
+                                                <td>@assignment.AssignedToEmployee?.Name</td>
+                                                <td>@assignment.AssignedDateTime.ToString("dd/MM HH:mm")</td>
+                                                <td>
+                                                    <span class="badge bg-@(assignment.AssignmentStatus == "Assigned" ? "primary" : assignment.AssignmentStatus == "Accepted" ? "success" : assignment.AssignmentStatus == "Completed" ? "secondary" : "danger")">
+                                                        @assignment.AssignmentStatus
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                <p class="mt-2">ยังไม่มีประวัติการส่งต่อ</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Assignment Rules -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="bi bi-info-circle"></i> กฎการส่งต่อ
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                1st Level → 1st Level (ส่งต่อให้เพื่อนร่วมงาน)
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                1st Level → 2nd Level (ส่งต่อให้ผู้เชี่ยวชาญ)
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success"></i>
+                                2nd Level → 2nd Level (ส่งต่อให้ผู้เชี่ยวชาญอื่น)
+                            </li>
+                            <li class="mb-0">
+                                <i class="bi bi-x-circle text-danger"></i>
+                                2nd Level → 1st Level (ไม่อนุญาต)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
