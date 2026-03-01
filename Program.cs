@@ -47,6 +47,33 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
+    
+    // Check if ServiceTypes exist, if not seed them
+    if (!context.ServiceTypes.Any())
+    {
+        Console.WriteLine("Seeding ServiceTypes...");
+        context.ServiceTypes.AddRange(
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "MS Office" },
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "PC/Mobile Device/Notebook/Printer" },
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "ขอติดตั้ง Software" },
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "ขอบริการเกี่ยวกับบัญชีผู้ใช้งาน" },
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "ระบบงานภายนอก" },
+            new DOTNETCORE_DEV.Models.serviceTypes { serviceTypesName = "ระบบงานภายใน" }
+        );
+    }
+    
+    // Check if Employees exist, if not seed them
+    if (!context.Employees.Any())
+    {
+        Console.WriteLine("Seeding Employees...");
+        context.Employees.AddRange(
+            new DOTNETCORE_DEV.Models.Employee { Name = "สมชาย ใจดี", SupportLevel = 1 },
+            new DOTNETCORE_DEV.Models.Employee { Name = "มานี รักดี", SupportLevel = 1 }
+        );
+    }
+    
+    context.SaveChanges();
+    Console.WriteLine("Database seeding completed.");
 }
 
 // Configure the HTTP request pipeline.

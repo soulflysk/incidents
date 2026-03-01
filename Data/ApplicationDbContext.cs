@@ -16,5 +16,25 @@ namespace DOTNETCORE_DEV.Data
         public DbSet<AssignIncident> AssignIncidents {get; set;}
         public DbSet<IncidentResolution> IncidentResolutions {get; set;}
         
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            
+            // Seed ServiceTypes
+            modelBuilder.Entity<serviceTypes>().HasData(
+                new serviceTypes { serviceTypeId = 1, serviceTypesName = "MS Office" },
+                new serviceTypes { serviceTypeId = 2, serviceTypesName = "PC/Mobile Device/Notebook/Printer" },
+                new serviceTypes { serviceTypeId = 3, serviceTypesName = "ขอติดตั้ง Software" },
+                new serviceTypes { serviceTypeId = 4, serviceTypesName = "ขอบริการเกี่ยวกับบัญชีผู้ใช้งาน" },
+                new serviceTypes { serviceTypeId = 5, serviceTypesName = "ระบบงานภายนอก" },
+                new serviceTypes { serviceTypeId = 6, serviceTypesName = "ระบบงานภายใน" }
+            );
+            
+            // Seed Employees
+            modelBuilder.Entity<Employee>().HasData(
+                new Employee { EmployeeID = 1, Name = "สมชาย ใจดี", SupportLevel = 1 },
+                new Employee { EmployeeID = 2, Name = "มานี รักดี", SupportLevel = 1 }
+            );
+        }
     }
 }

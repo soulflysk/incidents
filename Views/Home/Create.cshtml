@@ -1,0 +1,215 @@
+@model DOTNETCORE_DEV.Models.Incident
+@{
+    ViewData["Title"] = "สร้างเหตุการณ์ใหม่";
+}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="bi bi-shield-exclamation"></i>
+                ระบบจัดการเหตุการณ์ - ก.ล.ต.
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="@Url.Action("Index", "Home")">
+                    <i class="bi bi-list-ul"></i> รายการเหตุการณ์
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-circle"></i> สร้างเหตุการณ์ใหม่
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Create" method="post" onsubmit="console.log('Form submitted!'); return true;">
+                            <!-- Reporter Information -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary"><i class="bi bi-person-fill"></i> ข้อมูลผู้แจ้ง</h6>
+                                    <hr>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ประเภทผู้แจ้ง <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="InsideOrOutside" id="reporterType" onchange="toggleReporterFields()" required>
+                                        <option value="">-- เลือกประเภทผู้แจ้ง --</option>
+                                        <option value="ภายใน ก.ล.ต.">ภายใน ก.ล.ต.</option>
+                                        <option value="ภายนอก ก.ล.ต.">ภายนอก ก.ล.ต.</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่รับแจ้ง <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" asp-for="Date" required>
+                                </div>
+                            </div>
+
+                            <!-- Internal Reporter Fields -->
+                            <div id="internalReporterFields" class="row mb-4" style="display: none;">
+                                <div class="col-md-6">
+                                    <label class="form-label">รหัสพนักงาน</label>
+                                    <input type="text" class="form-control" asp-for="EmployeeId" placeholder="กรอกรหัสพนักงาน" onchange="loadEmployeeData(this.value)">
+                                    <div class="form-text">กรอกรหัสพนักงานเพื่อดึงข้อมูลอัตโนมัติ</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ชื่อพนักงาน</label>
+                                    <input type="text" class="form-control" asp-for="Name" readonly>
+                                </div>
+                            </div>
+
+                            <!-- External Reporter Fields -->
+                            <div id="externalReporterFields" class="row mb-4" style="display: none;">
+                                <div class="col-md-6">
+                                    <label class="form-label">อีเมล์ผู้แจ้ง <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" asp-for="Email" placeholder="example@email.com">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ชื่อผู้แจ้ง <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Name" placeholder="ชื่อ-นามสกุล">
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ชื่อบริษัท</label>
+                                    <input type="text" class="form-control" asp-for="CompanyName" placeholder="ชื่อบริษัท">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">เบอร์โทรศัพท์</label>
+                                    <input type="tel" class="form-control" asp-for="PhoneNumber" placeholder="02-123-4567">
+                                </div>
+                            </div>
+
+                            <!-- Incident Details -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-primary"><i class="bi bi-exclamation-triangle-fill"></i> รายละเอียดเหตุการณ์</h6>
+                                    <hr>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ประเภทบริการ <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="serviceTypeId" required>
+                                        <option value="">-- เลือกประเภทบริการ --</option>
+                                        @if (ViewBag.ServiceTypes != null)
+                                        {
+                                            @foreach (var service in ViewBag.ServiceTypes)
+                                            {
+                                                <option value="@service.serviceTypeId">@service.serviceTypesName</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="serviceTypeId" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">สถานะ <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="Result" required>
+                                        <option value="">-- เลือกสถานะ --</option>
+                                        <option value="รับแจ้ง">รับแจ้ง</option>
+                                        <option value="ดำเนินการ">ดำเนินการ</option>
+                                        <option value="รอดำเนินการ">รอดำเนินการ</option>
+                                        <option value="แก้ไขแล้ว">แก้ไขแล้ว</option>
+                                        <option value="ปิดเรื่อง">ปิดเรื่อง</option>
+                                    </select>
+                                    <span asp-validation-for="Result" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">ปัญหา/ความต้องการ <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" asp-for="Problem" rows="4" 
+                                            placeholder="กรุณากรอกรายละเอียดปัญหาหรือความต้องการอย่างชัดเจน..." required></textarea>
+                                    <span asp-validation-for="Problem" class="text-danger"></span>
+                                    <div class="form-text">กรุณากรอกรายละเอียดให้ชัดเจนเพื่อการดำเนินการที่รวดเร็ว</div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                                            <i class="bi bi-arrow-left"></i> ยกเลิก
+                                        </a>
+                                        <div>
+                                            <button type="submit" class="btn btn-primary" onclick="console.log('Submit button clicked!');">
+                                                <i class="bi bi-check-circle"></i> บันทึกเหตุการณ์
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function toggleReporterFields() {
+            const reporterType = document.getElementById('reporterType').value;
+            const internalFields = document.getElementById('internalReporterFields');
+            const externalFields = document.getElementById('externalReporterFields');
+            const emailField = document.querySelector('input[name="Email"]');
+            const nameField = document.querySelector('input[name="Name"]');
+            
+            if (reporterType === 'ภายใน ก.ล.ต.') {
+                internalFields.style.display = 'block';
+                externalFields.style.display = 'none';
+                emailField.removeAttribute('required');
+                nameField.setAttribute('required', '');
+            } else if (reporterType === 'ภายนอก ก.ล.ต.') {
+                internalFields.style.display = 'none';
+                externalFields.style.display = 'block';
+                emailField.setAttribute('required', '');
+                nameField.setAttribute('required', '');
+            } else {
+                internalFields.style.display = 'none';
+                externalFields.style.display = 'none';
+                emailField.removeAttribute('required');
+                nameField.removeAttribute('required');
+            }
+        }
+
+        function loadEmployeeData(employeeId) {
+            if (!employeeId) {
+                document.querySelector('input[name="Name"]').value = '';
+                return;
+            }
+            
+            fetch(`/Home/GetEmployee/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.name) {
+                        document.querySelector('input[name="Name"]').value = data.name;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading employee data:', error);
+                });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleReporterFields();
+        });
+    </script>
+</body>
+</html>
