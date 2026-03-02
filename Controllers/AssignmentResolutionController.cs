@@ -15,8 +15,9 @@ public class AssignmentResolutionController : Controller
     }
 
     // แสดงรายการการแก้ไขปัญหาของ assignment
-    public async Task<IActionResult> Index(int assignmentId)
+    public async Task<IActionResult> Index(int id)
     {
+        var assignmentId = id;
         var assignment = await _context.IncidentAssignments
             .Include(a => a.Incident)
             .Include(a => a.AssignedToEmployee)

@@ -163,6 +163,9 @@
                                                     <a href="@Url.Action("Create", "IncidentAssignment", new { incidentId = incident.IncidentId })" class="btn btn-sm btn-outline-primary" title="ส่งต่อ Incident">
                                                         <i class="bi bi-person-plus"></i>
                                                     </a>
+                                                    <a href="@Url.Action("Index", "AssignmentResolution", new { id = incident.IncidentId })" class="btn btn-sm btn-outline-info" title="Assignment Resolution">
+                                                        <i class="bi bi-clipboard-plus"></i>
+                                                    </a>
                                                     <a href="@Url.Action("Delete", "Home", new { id = incident.IncidentId })" class="btn btn-sm btn-danger" title="ลบ">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
