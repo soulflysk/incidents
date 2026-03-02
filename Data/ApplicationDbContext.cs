@@ -13,7 +13,6 @@ namespace DOTNETCORE_DEV.Data
         public DbSet<Incident> Incidents {get; set; }
         public DbSet<serviceTypes> ServiceTypes {get; set; }
         public DbSet<Employee> Employees {get; set;}
-        public DbSet<AssignIncident> AssignIncidents {get; set;}
         public DbSet<IncidentResolution> IncidentResolutions {get; set;}
         public DbSet<IncidentAssignment> IncidentAssignments {get; set;}
         public DbSet<AssignmentResolution> AssignmentResolutions {get; set;}
